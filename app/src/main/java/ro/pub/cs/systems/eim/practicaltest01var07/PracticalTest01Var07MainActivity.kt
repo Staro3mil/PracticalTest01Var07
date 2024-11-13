@@ -1,38 +1,38 @@
 package ro.pub.cs.systems.eim.practicaltest01var07
 
-import android.app.Activity
 import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
-import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 
 class PracticalTest01Var07MainActivity : AppCompatActivity() {
 
-    // Variables to hold the sum and product results
-    private var sumResult: Int? = null
-    private var productResult: Int? = null
+    private lateinit var editText1: EditText
+    private lateinit var editText2: EditText
+    private lateinit var editText3: EditText
+    private lateinit var editText4: EditText
 
-    // Register for activity result to get the data back from SecondaryActivity
-    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data: Intent? = result.data
-            val resultValue = data?.getIntExtra("result", 0)
+    // BroadcastReceiver to receive the random values from the service
+    private val randomValuesReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            // Get the random values from the broadcast
+            val value1 = intent.getIntExtra("value1", 0)
+            val value2 = intent.getIntExtra("value2", 0)
+            val value3 = intent.getIntExtra("value3", 0)
+            val value4 = intent.getIntExtra("value4", 0)
 
-            // Assuming that if a result is returned, it is either a sum or a product
-            resultValue?.let {
-                // Store result in sumResult or productResult based on the operation
-                if (sumResult == null) {
-                    sumResult = it
-                    Toast.makeText(this, "Sum: $sumResult", Toast.LENGTH_LONG).show()
-                } else {
-                    productResult = it
-                    Toast.makeText(this, "Product: $productResult", Toast.LENGTH_LONG).show()
-                }
-            }
+            // Update the EditText fields with the received values
+            editText1.setText(value1.toString())
+            editText2.setText(value2.toString())
+            editText3.setText(value3.toString())
+            editText4.setText(value4.toString())
+
+            // Optionally show a Toast with the received values
+            Toast.makeText(context, "Received: $value1, $value2, $value3, $value4", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -40,56 +40,30 @@ class PracticalTest01Var07MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_practical_test01_var07_main)
 
-        // Restore saved instance state if available
-        savedInstanceState?.let {
-            sumResult = it.getInt("SUM_RESULT")
-            productResult = it.getInt("PRODUCT_RESULT")
-        }
-
-        // Show restored values if they exist
-        sumResult?.let { Toast.makeText(this, "Restored Sum: $it", Toast.LENGTH_LONG).show() }
-        productResult?.let { Toast.makeText(this, "Restored Product: $it", Toast.LENGTH_LONG).show() }
-
         // Initialize the EditText fields
-        val editText1 = findViewById<EditText>(R.id.editText1)
-        val editText2 = findViewById<EditText>(R.id.editText2)
-        val editText3 = findViewById<EditText>(R.id.editText3)
-        val editText4 = findViewById<EditText>(R.id.editText4)
+        editText1 = findViewById(R.id.editText1)
+        editText2 = findViewById(R.id.editText2)
+        editText3 = findViewById(R.id.editText3)
+        editText4 = findViewById(R.id.editText4)
 
-        // Set button functionality (validate input and navigate to next activity if valid)
-        val setButton = findViewById<Button>(R.id.setButton)
-        setButton.setOnClickListener {
-            // Validate each field to check if it contains a valid integer
-            val input1 = editText1.text.toString().toIntOrNull()
-            val input2 = editText2.text.toString().toIntOrNull()
-            val input3 = editText3.text.toString().toIntOrNull()
-            val input4 = editText4.text.toString().toIntOrNull()
+        // Start the service to generate random values every 10 seconds
+        val serviceIntent = Intent(this, PracticalTest01Var07Service::class.java)
+        startService(serviceIntent)
 
-            // Check if all inputs are valid numbers
-            if (input1 != null && input2 != null && input3 != null && input4 != null) {
-                // All fields contain valid numbers, proceed with starting the secondary activity
-                val intent = Intent(this, PracticalTest01Var07SecondaryActivity::class.java).apply {
-                    putExtra("value1", input1)
-                    putExtra("value2", input2)
-                    putExtra("value3", input3)
-                    putExtra("value4", input4)
-                }
-                resultLauncher.launch(intent)
-            } else {
-                // At least one field is invalid, show a Toast message and ignore the click action
-                Toast.makeText(this, "Please enter valid numbers in all fields", Toast.LENGTH_LONG).show()
-            }
-        }
+        // Register the receiver to listen for the random values broadcast
+        // Register the broadcast receiver
+        registerReceiver(randomValuesReceiver, IntentFilter("com.example.practicaltest01var07.RANDOM_VALUES"),
+            RECEIVER_EXPORTED
+        )
     }
 
-    // Save the sum and product results during configuration changes or activity destruction
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        sumResult?.let { outState.putInt("SUM_RESULT", it) }
-        productResult?.let { outState.putInt("PRODUCT_RESULT", it) }
+    override fun onDestroy() {
+        super.onDestroy()
+        // Stop the service when the activity is destroyed
+        val serviceIntent = Intent(this, PracticalTest01Var07Service::class.java)
+        stopService(serviceIntent)
+
+        // Unregister the broadcast receiver
+        unregisterReceiver(randomValuesReceiver)
     }
 }
-
-
-
-
