@@ -5,56 +5,57 @@
     android:padding="16dp"
     android:gravity="center_horizontal">
 
-    <!-- 2x2 Table with Text Fields -->
+    <!-- 2x2 Table with Non-editable Text Fields (TextViews) -->
     <TableLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:stretchColumns="1">
 
         <TableRow>
-            <EditText
-                android:id="@+id/editText1"
+            <TextView
+                android:id="@+id/textView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="Field 1"
-                android:inputType="number" />
-
-            <EditText
-                android:id="@+id/editText2"
+                android:text="Value 1"
+                android:padding="8dp" />
+            <TextView
+                android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="Field 2"
-                android:inputType="number" />
-
+                android:text="Value 2"
+                android:padding="8dp" />
         </TableRow>
 
         <TableRow>
-            <EditText
-                android:id="@+id/editText3"
+            <TextView
+                android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="Field 3"
-                android:inputType="number" />
-
-            <EditText
-                android:id="@+id/editText4"
+                android:text="Value 3"
+                android:padding="8dp" />
+            <TextView
+                android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="Field 4"
-                android:inputType="number" />
-
+                android:text="Value 4"
+                android:padding="8dp" />
         </TableRow>
     </TableLayout>
 
-    <!-- "Set" Button Centered Horizontally -->
+    <!-- Sum Button -->
     <Button
-        android:id="@+id/setButton"
+        android:id="@+id/sumButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Set"
-        android:layout_gravity="center_horizontal"
+        android:text="Sum"
         android:layout_marginTop="16dp" />
 
-
+    <!-- Product Button -->
+    <Button
+        android:id="@+id/productButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Product"
+        android:layout_marginTop="8dp" />
 
 </LinearLayout>
